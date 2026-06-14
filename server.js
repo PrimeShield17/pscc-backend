@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
+ // ═══════════════════════════════════════════════════════════════
 // PrimeShield PSCC — Backend Server
 // Express + Stripe + Nodemailer
 //
@@ -296,8 +296,12 @@ app.get("/", (req, res) => {
   res.json({ status: "PSCC backend running ✅", time: new Date().toISOString() });
 });
 
-// View recorded payments (optional — remove in production if not needed)
+// View recorded payments — protected by secret header
 app.get("/payments", (req, res) => {
+  const secret = process.env.PAYMENTS_SECRET;
+  if (!secret || req.headers["x-admin-secret"] !== secret) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   res.json(loadPayments());
 });
 
@@ -335,7 +339,6 @@ app.post("/create-checkout-session", async (req, res) => {
       billing_address_collection: "required",
       phone_number_collection: { enabled: true },
       customer_email: customer_email || undefined,
-      // Store booking details in Stripe metadata (used by webhook)
       metadata: {
         clientName:   (bookingDetails?.clientName   || "").substring(0, 500),
         clientPhone:  (bookingDetails?.clientPhone  || "").substring(0, 500),
@@ -353,8 +356,6 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 // ── Stripe Webhook ──
-// Fires after checkout.session.completed
-// Does: 1) Records payment 2) Sends booking emails 3) Sends payment emails
 async function handleWebhook(req, res) {
   const sig = req.headers["stripe-signature"];
   let event;
@@ -380,7 +381,6 @@ async function handleWebhook(req, res) {
     const sessionId    = session.id;
     const paymentIntent = session.payment_intent || "";
 
-    // 1️⃣ Record payment
     savePayment({
       id:           paymentIntent || sessionId,
       sessionId,
@@ -397,14 +397,12 @@ async function handleWebhook(req, res) {
       status:       "paid",
     });
 
-    // 2️⃣ Send booking confirmation emails
     try {
       await sendBookingEmails({ clientName, clientEmail, clientPhone, businessName, packageName, date, total: amountPaid, paymentMethod: "now" });
     } catch (err) {
       console.error("Booking email error:", err.message);
     }
 
-    // 3️⃣ Send payment confirmation emails
     try {
       await sendPaymentEmails({ clientName, clientEmail, clientPhone, businessName, packageName, date, amountPaid, stripeSessionId: sessionId });
     } catch (err) {
