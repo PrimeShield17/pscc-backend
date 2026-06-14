@@ -42,12 +42,17 @@ function savePayment(record) {
 // ── Zoho transporter ────────────────────────────────────────
 // Env vars needed: ZOHO_USER, ZOHO_PASSWORD
 const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com.au",
+  host: "smtp.zoho.com",
   port: 587,
   secure: false,
   auth: {
     user: process.env.ZOHO_USER,
     pass: process.env.ZOHO_PASSWORD,
+  },
+  tls: { rejectUnauthorized: false },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
   },
 });
 
