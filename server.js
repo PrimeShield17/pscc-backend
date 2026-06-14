@@ -39,13 +39,15 @@ function savePayment(record) {
   console.log(`💾 Payment recorded: ${record.id}`);
 }
 
-// ── Gmail transporter ────────────────────────────────────────
-// Env vars needed: GMAIL_USER, GMAIL_APP_PASSWORD
+// ── Zoho transporter ────────────────────────────────────────
+// Env vars needed: ZOHO_USER, ZOHO_PASSWORD
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.zoho.com.au",
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: process.env.ZOHO_USER,
+    pass: process.env.ZOHO_PASSWORD,
   },
 });
 
@@ -86,7 +88,7 @@ function emailWrap(headerBg, headerContent, bodyContent) {
     <div style="font-size:11px;color:#9aa3b0;line-height:1.7;">
       © 2026 PrimeShield Commercial Cleaning (PSCC) · Gold Coast, QLD<br>
       Fully Insured · Police Checked · No Lock-In Contracts<br>
-      📞 0414 928 997 · 📧 PSCC@pshield.com.au
+      📞 0414 928 997 · 📧 info@pshield.com.au
     </div>
   </td></tr>
 </table>
@@ -109,7 +111,7 @@ function contactBox() {
     <tr><td style="padding:18px 22px;">
       <div style="font-size:11px;font-weight:bold;color:#c8983a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📞 Contact Us</div>
       <div style="font-size:13px;color:rgba(255,255,255,.7);line-height:2.1;">
-        📞 0414 928 997<br>📧 PSCC@pshield.com.au<br>
+        📞 0414 928 997<br>📧 info@pshield.com.au<br>
         📍 All Gold Coast Suburbs, QLD<br>🕐 Mon–Sun · 5am – 10pm
       </div>
     </td></tr>
@@ -152,7 +154,7 @@ async function sendBookingEmails({ clientName, clientEmail, clientPhone, busines
     ${contactBox()}`;
 
   await transporter.sendMail({
-    from:    `"PrimeShield PSCC" <${process.env.GMAIL_USER}>`,
+    from:    `"PrimeShield PSCC" <${}>`,
     to:      clientEmail,
     subject: `✅ Booking Confirmed — PrimeShield PSCC`,
     html:    emailWrap("#c8983a",
@@ -188,8 +190,8 @@ async function sendBookingEmails({ clientName, clientEmail, clientPhone, busines
     </table>`;
 
   await transporter.sendMail({
-    from:    `"PSCC Bookings" <${process.env.GMAIL_USER}>`,
-    to:      "PSCC@pshield.com.au",
+    from:    `"PSCC Bookings" <${}>`,
+    to:      "info@pshield.com.au",
     replyTo: clientEmail,
     subject: `🆕 New Booking — ${clientName} · ${packageName}`,
     html:    emailWrap("#c8983a",
@@ -198,7 +200,7 @@ async function sendBookingEmails({ clientName, clientEmail, clientPhone, busines
       psccBody),
   });
 
-  console.log(`📧 Booking emails sent → client: ${clientEmail} | PSCC: PSCC@pshield.com.au`);
+  console.log(`📧 Booking emails sent → client: ${clientEmail} | PSCC: info@pshield.com.au`);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -235,7 +237,7 @@ async function sendPaymentEmails({ clientName, clientEmail, clientPhone, busines
     ${contactBox()}`;
 
   await transporter.sendMail({
-    from:    `"PrimeShield PSCC" <${process.env.GMAIL_USER}>`,
+    from:    `"PrimeShield PSCC" <${}>`,
     to:      clientEmail,
     subject: `💳 Payment Received — Thank You! PrimeShield PSCC`,
     html:    emailWrap("#16a34a",
@@ -272,8 +274,8 @@ async function sendPaymentEmails({ clientName, clientEmail, clientPhone, busines
     </table>`;
 
   await transporter.sendMail({
-    from:    `"PSCC Payments" <${process.env.GMAIL_USER}>`,
-    to:      "PSCC@pshield.com.au",
+    from:    `"PSCC Payments" <${}>`,
+    to:      "info@pshield.com.au",
     replyTo: clientEmail,
     subject: `💰 Payment Received — ${clientName} · ${amountPaid}`,
     html:    emailWrap("#16a34a",
@@ -282,7 +284,7 @@ async function sendPaymentEmails({ clientName, clientEmail, clientPhone, busines
       psccBody),
   });
 
-  console.log(`💰 Payment emails sent → client: ${clientEmail} | PSCC: PSCC@pshield.com.au`);
+  console.log(`💰 Payment emails sent → client: ${clientEmail} | PSCC: info@pshield.com.au`);
 }
 
 // ════════════════════════════════════════════════════════════
