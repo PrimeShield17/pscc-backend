@@ -154,7 +154,7 @@ async function sendBookingEmails({ clientName, clientEmail, clientPhone, busines
     ${contactBox()}`;
 
   await transporter.sendMail({
-    from:    `"PrimeShield PSCC" <${}>`,
+    from:    `"PrimeShield PSCC" <${process.env.ZOHO_USER}>`,
     to:      clientEmail,
     subject: `✅ Booking Confirmed — PrimeShield PSCC`,
     html:    emailWrap("#c8983a",
@@ -190,7 +190,7 @@ async function sendBookingEmails({ clientName, clientEmail, clientPhone, busines
     </table>`;
 
   await transporter.sendMail({
-    from:    `"PSCC Bookings" <${}>`,
+    from:    `"PSCC Bookings" <${process.env.ZOHO_USER}>`,
     to:      "info@pshield.com.au",
     replyTo: clientEmail,
     subject: `🆕 New Booking — ${clientName} · ${packageName}`,
@@ -237,7 +237,7 @@ async function sendPaymentEmails({ clientName, clientEmail, clientPhone, busines
     ${contactBox()}`;
 
   await transporter.sendMail({
-    from:    `"PrimeShield PSCC" <${}>`,
+    from:    `"PrimeShield PSCC" <${process.env.ZOHO_USER}>`,
     to:      clientEmail,
     subject: `💳 Payment Received — Thank You! PrimeShield PSCC`,
     html:    emailWrap("#16a34a",
@@ -274,7 +274,7 @@ async function sendPaymentEmails({ clientName, clientEmail, clientPhone, busines
     </table>`;
 
   await transporter.sendMail({
-    from:    `"PSCC Payments" <${}>`,
+    from:    `"PSCC Payments" <${process.env.ZOHO_USER}>`,
     to:      "info@pshield.com.au",
     replyTo: clientEmail,
     subject: `💰 Payment Received — ${clientName} · ${amountPaid}`,
